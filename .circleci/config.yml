@@ -38,9 +38,9 @@ jobs:
             - ./node_modules
     deploy:
       docker:
-        - image: circleci/node:latest
+        - image: circleci/node:10.16.3
       steps:
         - run:
-            name: Deploy Application
+            name: deploy-application
             command: ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_PUBLIC_DNS "rm -rf ExampleApplication/;git clone https://github.com/sandydevopssec/ExampleApplication.git; source ExampleApplication/deploy.sh"
 
