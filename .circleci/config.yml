@@ -19,11 +19,12 @@ workflows:
 
 jobs:
   build:
-    working_directory: ~/example_application
+    working_directory: ~/project
     docker:
       - image: circleci/node:10.16.3
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
       - run:
           name: update-npm
           command: sudo npm install -g npm@5
@@ -36,11 +37,11 @@ jobs:
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
             - ./node_modules
-    deploy:
-      docker:
-        - image: circleci/node:10.16.3
-      steps:
+  deploy:
+    docker:
+      - image: circleci/node:10.16.3
+    steps:
         - run:
             name: deploy-application
-            command: ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_PUBLIC_DNS "rm -rf ExampleApplication/;git clone https://github.com/sandydevopssec/ExampleApplication.git; source ExampleApplication/deploy.sh"
+            command: ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_PUBLIC_DNS "rm -rf ExampleApplication/;git clone https://github.com/ADNCI/ExampleApplication.git; source ExampleApplication/deploy.sh"
 
