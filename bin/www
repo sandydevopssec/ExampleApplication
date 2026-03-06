@@ -88,3 +88,47 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+// Add HTTPS Section
+var fs = require('fs');
+var http = require('http');
+var https = require('https');
+
+var port = normalizePort(process.env.PORT || '8080');  // Fixed: process.env.Port -> process.env.PORT
+var https_port = process.env.PORT_HTTPS || 8443;
+
+if (process.env.ENV !== "DEV") {
+  // Load certificates directly - no manual parsing needed for PEM files [web:9][web:12]
+  var privatekey = fs.readFileSync('privatekey.pem');
+  var cert = fs.readFileSync('server.crt');  // Fixed: readfileSync -> readFileSync, no "utf8" for binary PEM
+
+  var options = {
+    key: privatekey,
+    cert: cert
+  };  // Fixed: var options inside if-block
+
+  app.set('port', https_port);  // Fixed quotes
+
+  // Create HTTPS server [web:8][web:15]
+  var httpsServer = https.createServer(options, app).listen(https_port, function () {
+    console.log('Magic happens on port ' + https_port);  // Fixed: htps_port -> https_port, prt -> port
+  });
+
+  httpsServer.on('error', onError);  // Fixed: server.on -> httpsServer.on
+  httpsServer.on('listening', onListening);  // Fixed: listening -> 'listening'
+
+  // Redirect HTTP to HTTPS [web:10][web:13][web:16]
+  http.createServer(function (req, res) {
+    var host = req.headers['host'] || 'localhost:' + https_port;
+    res.writeHead(301, { "Location": "https://" + host + req.url });  // Fixed: write.Head -> writeHead, replace logic, quotes
+    console.log("HTTP request redirected to: https://" + host + req.url);
+    res.end();
+  }).listen(port);
+
+} else {
+  // DEV mode: HTTP only
+  var server = http.createServer(app);
+  server.listen(port);
+  server.on('error', onError);  // Fixed: on Error -> onError
+  server.on('listening', onListening);  // Fixed quotes
+}
