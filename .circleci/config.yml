@@ -39,13 +39,10 @@ jobs:
       - run:
           name: aduit-packages
           command: npm aduit
-      - run:
-          name: test-run
-          command: npm run test
-    deploy:
-      docker:
-        - image: circleci/node:10.16.3
-      steps:
+  deploy:
+    docker:
+      - image: circleci/node:10.16.3
+    steps:
         - run:
             name: deploy-application
-            command: ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_PUBLIC_DNS "export SERVER=\$SERVER\"; export PRIVATE_KEY=\$PRIVATE_KEY\"; "rm -rf ExampleApplication/;git clone https://github.com/sandydevopssec/ExampleApplication.git; source ExampleApplication/deploy.sh"
+            command: ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_PUBLIC_DNS "export SERVER=\"$SERVER\"; export PRIVATE_KEY=\"$PRIVATE_KEY\"; rm -rf ExampleApplication/; git clone https://github.com/sandydevopssec/ExampleApplication.git; source ExampleApplication/deploy.sh"
