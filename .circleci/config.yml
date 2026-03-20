@@ -37,8 +37,8 @@ jobs:
           paths:
             - ./node_modules
       - run:
-          name: aduit-packages
-          command: npm aduit
+          name: audit-packages
+          command: npm audit
   deploy:
     docker:
       - image: circleci/node:10.16.3
