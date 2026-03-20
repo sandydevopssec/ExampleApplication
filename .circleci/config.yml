@@ -19,11 +19,12 @@ workflows:
 
 jobs:
   build:
-    working_directory: ~/example_application
+    working_directory: ~/project
     docker:
       - image: circleci/node:10.16.3
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
       - run:
           name: update-npm
           command: sudo npm install -g npm@5
@@ -37,28 +38,12 @@ jobs:
           paths:
             - ./node_modules
       - run:
-          name: aduit-packages
-          command: npm aduit
-      - run:
-          name: test-run
-          command: npm run test
-    deploy:
-      docker:
-        - image: circleci/node:10.16.3
-      steps:
+          name: audit-packages
+          command: npm audit
+  deploy:
+    docker:
+      - image: circleci/node:10.16.3
+    steps:
         - run:
             name: deploy-application
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-            command: ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_PUBLIC_DNS "export SERVER=\$SERVER\"; export PRIVATE_KEY=\$PRIVATE_KEY\"; "rm -rf ExampleApplication/;git clone https://github.com/ADNCI/ExampleApplication.git; source ExampleApplication/deploy.sh"
-=======
-            command: ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_PUBLIC_DNS "rm -rf ExampleApplication/;git clone https://github.com/sandydevopssec/ExampleApplication.git; source ExampleApplication/deploy.sh"
->>>>>>> parent of 4c76fe2 (added continous delivery)
-=======
-            command: ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_PUBLIC_DNS "rm -rf ExampleApplication/;git clone https://github.com/sandydevopssec/ExampleApplication.git; source ExampleApplication/deploy.sh"
->>>>>>> parent of 4c76fe2 (added continous delivery)
-=======
-            command: ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_PUBLIC_DNS "rm -rf ExampleApplication/;git clone https://github.com/sandydevopssec/ExampleApplication.git; source ExampleApplication/deploy.sh"
->>>>>>> parent of 4c76fe2 (added continous delivery)
-
+            command: ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_PUBLIC_DNS "export SERVER=\"$SERVER\"; export PRIVATE_KEY=\"$PRIVATE_KEY\"; rm -rf ExampleApplication/; git clone https://github.com/ADNCI/ExampleApplication.git; source ExampleApplication/deploy.sh"
